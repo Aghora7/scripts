@@ -1,6 +1,10 @@
 import os
 import datetime
 import sys
+import subprocess  # Import the subprocess module
+
+# Get the home directory of the current user
+user_home = os.path.expanduser("~")
 
 if len(sys.argv) != 2:
     print("Usage: python3 script.py <vendor_folder_path>")
@@ -13,6 +17,9 @@ vendor_folder = sys.argv[1]
 brand_name = input("Enter the brand name: ")
 model_name = input("Enter the model name: ")
 
+# Specify the additional path to append after the user's home directory
+additional_path = 'DumprX/out/'
+
 # Create a list to store file names and locations
 file_list = []
 
@@ -23,13 +30,13 @@ for root, dirs, files in os.walk(vendor_folder):
         file_path = os.path.join(root, file)
 
         # Replace the specified text in the file path
-        file_path = file_path.replace('/home/aghora7/DumprX/out/', 'vendor/{}/{}/proprietary/'.format(brand_name, model_name))
+        file_path = file_path.replace(os.path.join(user_home, additional_path), 'vendor/{}/{}/proprietary/'.format(brand_name, model_name))
 
         # Append the modified file path to the list
         file_list.append(file_path)
 
 # Specify the name of the text file to store the information
-output_file = '{}-{}.mk'.format(model_name, brand_name)
+output_file = os.path.join(os.path.expanduser("~"), '{}-vendor.mk'.format(model_name))
 
 # Write the modified file paths to the text file with "PRODUCT_COPY_FILES +="
 with open(output_file, 'w') as file:
@@ -67,3 +74,6 @@ with open(output_file, 'w') as file:
         file.write('    {}:{} \\\n'.format(file_path, target_path))
 
 print(f"Modified file paths have been saved to {output_file}")
+
+# Open the file explorer or file manager at the output location
+subprocess.run(["xdg-open", os.path.dirname(os.path.abspath(output_file))])
