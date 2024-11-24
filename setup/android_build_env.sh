@@ -9,6 +9,7 @@
 LATEST_MAKE_VERSION="4.3"
 UBUNTU_16_PACKAGES="libesd0-dev"
 UBUNTU_20_PACKAGES="libncurses5 curl python-is-python3"
+UBUNTU_24_PACKAGES="libncurses6 curl python3 python3-all-dev" # Updated packages for Ubuntu 24.04
 DEBIAN_10_PACKAGES="libncurses5"
 DEBIAN_11_PACKAGES="libncurses5"
 PACKAGES=""
@@ -16,8 +17,8 @@ PACKAGES=""
 sudo apt install software-properties-common -y
 sudo apt update
 
-# Install lsb-core packages
-sudo apt install lsb-core -y
+# Install lsb-release (replacement for lsb-core)
+sudo apt install lsb-release -y
 
 LSB_RELEASE="$(lsb_release -d | cut -d ':' -f 2 | sed -e 's/^[[:space:]]*//')"
 
@@ -25,6 +26,9 @@ if [[ ${LSB_RELEASE} =~ "Mint 18" || ${LSB_RELEASE} =~ "Ubuntu 16" ]]; then
     PACKAGES="${UBUNTU_16_PACKAGES}"
 elif [[ ${LSB_RELEASE} =~ "Ubuntu 20" || ${LSB_RELEASE} =~ "Ubuntu 21" || ${LSB_RELEASE} =~ "Ubuntu 22" || ${LSB_RELEASE} =~ 'Pop!_OS 2' ]]; then
     PACKAGES="${UBUNTU_20_PACKAGES}"
+elif [[ ${LSB_RELEASE} =~ "Ubuntu 24" || ${LSB_RELEASE} =~ "noble" ]]; then
+    echo "Detected Ubuntu 24.04 (noble). Using updated packages."
+    PACKAGES="${UBUNTU_24_PACKAGES}"
 elif [[ ${LSB_RELEASE} =~ "Debian GNU/Linux 10" ]]; then
     PACKAGES="${DEBIAN_10_PACKAGES}"
 elif [[ ${LSB_RELEASE} =~ "Debian GNU/Linux 11" ]]; then
@@ -36,11 +40,11 @@ sudo DEBIAN_FRONTEND=noninteractive \
     adb autoconf automake axel bc bison build-essential \
     ccache clang cmake curl expat fastboot flex g++ \
     g++-multilib gawk gcc gcc-multilib git git-lfs gnupg gperf \
-    htop imagemagick lib32ncurses5-dev lib32z1-dev libtinfo5 libc6-dev libcap-dev \
-    libexpat1-dev libgmp-dev '^liblz4-.*' '^liblzma.*' libmpc-dev libmpfr-dev libncurses5-dev \
+    htop imagemagick lib32ncurses-dev lib32z1-dev libtinfo6 libc6-dev libcap-dev \
+    libexpat1-dev libgmp-dev '^liblz4-.*' '^liblzma.*' libmpc-dev libmpfr-dev libncurses-dev \
     libsdl1.2-dev libssl-dev libtool libxml2 libxml2-utils '^lzma.*' lzop \
     maven ncftp ncurses-dev patch patchelf pkg-config pngcrush \
-    pngquant python2.7 python3-pyelftools python-all-dev re2c schedtool squashfs-tools subversion \
+    pngquant python3 python3-pyelftools python3-all-dev re2c schedtool squashfs-tools subversion \
     texinfo unzip w3m xsltproc zip zlib1g-dev lzip \
     libxml-simple-perl libswitch-perl apt-utils rsync \
     ${PACKAGES} -y
